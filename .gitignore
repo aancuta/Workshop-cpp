@@ -1,0 +1,9 @@
+.vscode
+bin/*
+Testing/*
+.DS_Store
+Makefile
+CMakeFiles
+CMakeCache.txt
+*.a
+*.cmake

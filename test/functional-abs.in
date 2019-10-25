@@ -1,0 +1,17 @@
++{
+    sgn = {
+        olda = a;
+        a = a / 2;
+        if (a) sgn else olda
+    };
+    abs = {
+        origa = a;
+        origa * sgn
+    };
+    print { a =  11; abs };
+    print { a = -32; abs };
+    print { a =  +1; abs };
+    print { a =   0; abs };
+    print { a =  -1; abs };
+    0
+}

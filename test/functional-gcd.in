@@ -1,0 +1,15 @@
++{
+    gcd = {
+        if (b) {
+            oldb = b;
+            b = a - (a / b) * b;
+            a = oldb;
+            gcd
+        }
+        else
+            a
+    };
+    a = 1071;
+    b = 462;
+    print gcd
+}
