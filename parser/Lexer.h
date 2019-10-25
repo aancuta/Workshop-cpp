@@ -35,7 +35,7 @@ private:
     std::istream& _stream;
 
     std::string _currentText = "";
-    TOKEN_TYPE _currentToken;
+    TOKEN_TYPE _currentToken = TOKEN_TYPE::END;
 
     const std::unordered_set<std::string> OPERATORS = { "*", "+", "-", "/", "(", ")", ";", "=", "{", "}", "**" };
 

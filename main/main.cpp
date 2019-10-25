@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <memory>
 #include <vector>
+#include <cassert>
 
 #include "ast/Expression.h"
 #include "ast/Identifier.h"

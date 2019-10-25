@@ -1,6 +1,8 @@
 #include <iostream>
+#include <cassert>
 
 #include "Lexer.h"
+
 namespace {
     enum class STATE {
         INT,

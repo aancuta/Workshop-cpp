@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <memory>
+#include <algorithm>
 
 namespace {
     template <typename T>
