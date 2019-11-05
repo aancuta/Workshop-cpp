@@ -1,5 +1,6 @@
-#include "BinaryExpression.h"
-#include "Undefined.h"
+#include "BinaryExpression.hpp"
+#include "Undefined.hpp"
+
 using OP_TYPE = BinaryExpression::OP_TYPE;
 
 

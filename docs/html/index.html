@@ -61,11 +61,122 @@ $(function() {
 </iframe>
 </div>
 
-<div class="header">
+<div class="PageDoc"><div class="header">
   <div class="headertitle">
 <div class="title">Workshop Documentation</div>  </div>
 </div><!--header-->
 <div class="contents">
+<div class="textblock"><hr  />
+<p> <b>Building and running tests:</b></p>
+<hr  />
+ <div class="fragment"><div class="line">cmake .                        # generate build files</div>
+<div class="line">cmake --build .                # build sources</div>
+<div class="line">cmake --build . --target test  # run tests</div>
+</div><!-- fragment --><p>For implementation class hierarchy, please open <code>README.html</code>.</p>
+<hr  />
+<p> <b>Language</b></p>
+<hr  />
+<p>In this document we define what is considered to be a valid program for our language and what is the expected behaviour for a valid program.</p>
+<p>This language is a simple programming language composed of expressions. The input consists of a file that contains one expression or no expressions at all.</p>
+<p>The first stage of our application will convert the text input to an AST (Abstract Syntax Tree), which is an alternative representation of the program. This conversion is done in 2 steps: lexing and parsing. The <a class="el" href="class_lexer.html">Lexer</a> converts the text input to a list of tokens. The <a class="el" href="class_parser.html">Parser</a> will use these tokens to create the AST.</p>
+<p>We can think of tokens as the "words" of our language, while the AST contains "sentences" that are grammatically correct.</p>
+<hr  />
+<p> <b><a class="el" href="class_lexer.html">Lexer</a></b></p>
+<hr  />
+<p>In this section we define what the tokens of our language are. If an input text can't be decomposed in the tokens described here, the input is not considered valid.</p>
+<p>Tokens are the words of our language and they can be described using regular expressions.</p>
+<p>Valid tokens for our language are: </p><div class="fragment"><div class="line">&quot;if&quot;        - keyword</div>
+<div class="line">&quot;else&quot;      - keyword</div>
+<div class="line">&quot;then&quot;      - keyword</div>
+<div class="line">&quot;print&quot;     - keyword</div>
+<div class="line">&quot;undefined&quot; - keyword</div>
+<div class="line">ID          - [A-Za-z]+ A string with at least one character. Only upper-case and lower-case letters are permitted.</div>
+<div class="line">NUMBER      - [0-9]+ A string with at least one character. All characters must be digits.</div>
+<div class="line">END         - special token that marks the end-of-file.</div>
+<div class="line">&quot;*&quot;</div>
+<div class="line">&quot;+&quot;</div>
+<div class="line">&quot;-&quot;</div>
+<div class="line">&quot;/&quot;</div>
+<div class="line">&quot;(&quot;</div>
+<div class="line">&quot;)&quot;</div>
+<div class="line">&quot;;&quot;</div>
+<div class="line">&quot;=&quot;</div>
+<div class="line">&quot;{&quot;</div>
+<div class="line">&quot;}&quot;</div>
+<div class="line">&quot;**&quot;</div>
+</div><!-- fragment --><p>Keywords have priority over identifier names, so we can't have an identifier called "if", "else", "then", "print" or "undefined".</p>
+<p>All whitespace characters are ignored by the <a class="el" href="class_lexer.html">Lexer</a> and are not represented as tokens.</p>
+<hr  />
+<p> <b><a class="el" href="class_parser.html">Parser</a></b></p>
+<hr  />
+<p>The parser groups some of the tokens into the AST structure.</p>
+<p>In this section we defined the grammar for our language, for reference purposes. This grammar is in a simplified form (i.e. it's not directly usable by the compiler). Our compiler uses a right-recursive grammar, implemented using a recursive descendent parser.</p>
+<div class="fragment"><div class="line">program: expression?;</div>
+<div class="line"> </div>
+<div class="line">expression: NUMBER</div>
+<div class="line">          | ID</div>
+<div class="line">          | &quot;undefined&quot;</div>
+<div class="line">          | &quot;(&quot; expression &quot;)&quot;</div>
+<div class="line">          | assignmentExpression</div>
+<div class="line">          | binaryExpression</div>
+<div class="line">          | conditionalExpression</div>
+<div class="line">          | printExpression</div>
+<div class="line">          | unaryExpression</div>
+<div class="line">          | block</div>
+<div class="line">          ;</div>
+<div class="line"> </div>
+<div class="line">assignmentExpression : ID &quot;=&quot; expression;</div>
+<div class="line"> </div>
+<div class="line">printExpression : &quot;print&quot; expression;</div>
+<div class="line"> </div>
+<div class="line">binaryExpression : expression &quot;**&quot; expression</div>
+<div class="line">                 | expression &quot;*&quot; expression</div>
+<div class="line">                 | expression &quot;/&quot; expression</div>
+<div class="line">                 | expression &quot;+&quot; expression</div>
+<div class="line">                 | expression &quot;-&quot; expression</div>
+<div class="line">                 ;</div>
+<div class="line"> </div>
+<div class="line">unaryExpression : &quot;-&quot; expression</div>
+<div class="line">                | &quot;+&quot; expression</div>
+<div class="line">                ;</div>
+<div class="line"> </div>
+<div class="line">conditionalExpression : &quot;if&quot; expression &quot;then&quot; expression (&quot;else&quot; expression);</div>
+<div class="line"> </div>
+<div class="line">block : &quot;{&quot; ((expression &quot;;&quot;)* expression)? &quot;}&quot;;</div>
+</div><!-- fragment --><p>The priority list for the binary operations is, highest to lowest priority: </p><div class="fragment"><div class="line">0: **</div>
+<div class="line">1: *, /</div>
+<div class="line">2: +, -</div>
+</div><!-- fragment --><hr  />
+<p> <b><a class="el" href="class_expression.html">Expression</a></b></p>
+<hr  />
+<p>Expressions supported by this language can be grouped in 3 categories: basic expressions, composite expressions and blocks.</p>
+<p>Basic expressions correspond to a <a class="el" href="class_lexer.html">Lexer</a> token. There are 3 types of basic expressions that we can use in this language:</p>
+<p><a class="el" href="class_number.html">Number</a>: an integer value. While numbers can be negative in our language, in the AST there are only non-negative numbers. When we parse "-5" we don't obtain the number "-5", we obtain an unary expression with type "minus" and the number "5" as a sub-expression. Example of numbers: 0, 3, 5, 42</p>
+<p><a class="el" href="class_identifier.html">Identifier</a>: the name of a variable. Using identifiers we can save values for use at a future date. Reading the value corresponding to an identifier that has not been assigned will result in the undefined value. Example of identifiers: i, sum, etc</p>
+<p><a class="el" href="class_undefined.html">Undefined</a>: keyword for the undefined value. This is a special keyword in our language in order to prevent assigning values to a variable called "undefined". The following code will result in a syntax error: </p><div class="fragment"><div class="line">undefined = 1</div>
+</div><!-- fragment --><p>Composite expressions contain sub-expressions. The types of expressions are: <a class="el" href="class_unary_expression.html">UnaryExpression</a>, <a class="el" href="class_binary_expression.html">BinaryExpression</a>, <a class="el" href="class_conditional_expression.html">ConditionalExpression</a>, <a class="el" href="class_print_expression.html">PrintExpression</a> and <a class="el" href="class_assignment.html">Assignment</a>.</p>
+<p><a class="el" href="class_unary_expression.html">UnaryExpression</a>: either "-" or "+" performed on a single subexpression. Parsing "-5" will result in a <a class="el" href="class_unary_expression.html">UnaryExpression</a> with 5 as its subexpression.</p>
+<p><a class="el" href="class_binary_expression.html">BinaryExpression</a>: these are arithmetic operations: <code>+, -, *, ** and /</code></p>
+<p>Binary expressions contain 2 subexpressions.</p>
+<p><a class="el" href="class_conditional_expression.html">ConditionalExpression</a>: these are the if-s of our language.</p>
+<p>A <a class="el" href="class_block.html">Block</a> is a list of expression, that evaluate to the last expression. If a <a class="el" href="class_block.html">Block</a> is empty, it evaluates to undefined.</p>
+<hr  />
+<p> <b>Lazy evaluation</b></p>
+<hr  />
+<p>From the AST point of view, blocks are "values". A <a class="el" href="class_value.html">Value</a> is something that can be assigned to an <a class="el" href="class_identifier.html">Identifier</a>. When we assign a <a class="el" href="class_block.html">Block</a> to an <a class="el" href="class_identifier.html">Identifier</a>, we do not execute that <a class="el" href="class_block.html">Block</a>, we save the <a class="el" href="class_block.html">Block</a> for later usage.</p>
+<p>Besides from <a class="el" href="class_value.html">Value</a>, we also have the notion of "constants". A <a class="el" href="class_constant.html">Constant</a> is either a <a class="el" href="class_number.html">Number</a> or the <a class="el" href="class_undefined.html">Undefined</a> <a class="el" href="class_value.html">Value</a>. A <a class="el" href="class_constant.html">Constant</a> is always a value, but a <a class="el" href="class_value.html">Value</a> may not be a <a class="el" href="class_constant.html">Constant</a>. Some expressions only work with <a class="el" href="class_constant.html">Constant</a> and will convert the value to a <a class="el" href="class_constant.html">Constant</a> (i.e. they will execute the <a class="el" href="class_block.html">Block</a>). These expressions are the <a class="el" href="class_unary_expression.html">UnaryExpression</a>, the <a class="el" href="class_binary_expression.html">BinaryExpression</a> and the <a class="el" href="class_print_expression.html">PrintExpression</a>.</p>
+<hr  />
+<p> <b>Recommended resources</b></p>
+<hr  />
+<ul>
+<li><a href="https://cmake.org/download/">CMake</a></li>
+<li><a href="https://visualstudio.microsoft.com/vs/">Visual Studio Community</a></li>
+</ul>
+<p>Alternative to Visual Studio:</p><ul>
+<li><a href="http://releases.llvm.org/download.html">Clang</a></li>
+<li><a href="https://github.com/ninja-build/ninja/releases">Ninja</a> </li>
+</ul>
+</div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

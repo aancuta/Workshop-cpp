@@ -1,5 +1,7 @@
 add_library(parser_library
+    Lexer.hpp
     Lexer.cpp
+    Parser.hpp
     Parser.cpp
 )
 

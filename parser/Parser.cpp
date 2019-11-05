@@ -2,18 +2,12 @@
 #include <iostream>
 #include <cassert>
 
-#include "Parser.h"
+#include "Parser.hpp"
 
-#include "ast/BinaryExpression.h"
-#include "ast/Expression.h"
+#include "ast/BinaryExpression.hpp"
+#include "ast/Expression.hpp"
 
 using TOKEN_TYPE = Lexer::TOKEN_TYPE;
-
-template <typename T>
-void failFast(const Lexer& lex, T t) {
-    std::cerr << "Expected " << t << ". Got " << lex.getText() << ", " << (int)lex.getToken() << std::endl;
-    assert(false);
-}
 
 namespace {
     using OP_TYPE = BinaryExpression::OP_TYPE;
@@ -24,9 +18,23 @@ namespace {
     };
 }
 
+
+template <typename T>
+void Parser::expectedToken(T t) const {
+    std::cerr << "Error at line: " << _lexer->getLine() << std::endl;
+    std::cerr << "Expected " << t << " but got " << _lexer->getText() << std::endl;
+    assert(false);
+}
+
+void Parser::unexpectedToken() const {
+    std::cerr << "Error at line: " << _lexer->getLine() << std::endl;
+    std::cerr << "Unexpected " << _lexer->getText() << std::endl;
+    assert(false);
+}
+
 std::string Parser::match(TOKEN_TYPE type) const {
     if (_lexer->getToken() != type) {
-        failFast(*_lexer, (int)type);
+        expectedToken((int)type);
     }
     auto text = _lexer->getText();
     _lexer->consume();
@@ -35,9 +43,8 @@ std::string Parser::match(TOKEN_TYPE type) const {
 
 std::string Parser::match(const std::string& str) const {
     if (_lexer->getText() != str) {
-        failFast(*_lexer, str);
+        expectedToken(str);
     }
-    assert(_lexer->getText() == str);
     _lexer->consume();
     return str;
 }
@@ -45,10 +52,14 @@ std::string Parser::match(const std::string& str) const {
 std::unique_ptr<Expression> Parser::parseBlock() {
     match("{");
     auto block = _factory.makeBlock();
-    while (_lexer->getText() != "}") {
-        block->addExpression(parseExpression());
-        if (_lexer->getText() != "}") {
-            match(";");
+    if (_lexer->getText() != "}") {
+        for (;;) {
+            block->addExpression(parseExpression());
+            if (_lexer->getText() != "}") {
+                match(";");
+            } else {
+                break;
+            }
         }
     }
     match("}");
@@ -59,7 +70,7 @@ std::unique_ptr<Expression> Parser::parseExpression() {
     return parseBinaryExpression(0); 
 }
 
-std::unique_ptr<Expression> Parser::parseBinaryExpression(int priority) {
+std::unique_ptr<Expression> Parser::parseBinaryExpression(unsigned priority) {
     if (priority >= OP_PRECEDENCE.size()) {
         return parseBasic();
     }
@@ -118,7 +129,7 @@ std::unique_ptr<Expression> Parser::parseBasic() {
             match("+");
             return _factory.makeUnary(parseBasic(), UnaryExpression::OP_TYPE::ADD);
         } else {
-            assert(false);
+            unexpectedToken();
         }
         break;
     }
@@ -151,7 +162,7 @@ void Parser::parse() {
     if (_lexer->getToken() != TOKEN_TYPE::END) {
         auto expr = parseExpression();
         if (_lexer->getToken() != TOKEN_TYPE::END) {
-            failFast(*_lexer, (int)TOKEN_TYPE::END);
+            expectedToken((int)TOKEN_TYPE::END);
         }
         DumpGraph::dumpGraph(*expr);
         expr->getAsValue();

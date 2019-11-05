@@ -1,17 +1,14 @@
 
-#include "DumpGraph.h"
+#include "DumpGraph.hpp"
 
-#include "Assignment.h"
-#include "BinaryExpression.h"
-#include "Block.h"
-#include "ConditionalExpression.h"
-#include "Expression.h"
-#include "Identifier.h"
-#include "Number.h"
-#include "PrintExpression.h"
-#include "UnaryExpression.h"
-#include "Undefined.h"
-
+#include "Assignment.hpp"
+#include "Block.hpp"
+#include "ConditionalExpression.hpp"
+#include "Expression.hpp"
+#include "BinaryExpression.hpp"
+#include "Identifier.hpp"
+#include "PrintExpression.hpp"
+#include "UnaryExpression.hpp"
 #include <iostream>
 #include <memory>
 #include <algorithm>
@@ -75,7 +72,7 @@ void DumpGraph::dump(const Identifier& param) {
 }
 
 void DumpGraph::dump(const Number& param) {
-    dumpLabel(param, param.get());
+    dumpLabel<int>(param, param);
 }
 
 void DumpGraph::dump(const PrintExpression& param) {

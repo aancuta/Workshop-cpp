@@ -1,8 +1,23 @@
 add_library(ast_library
+    Assignment.hpp
+    BinaryExpression.hpp
     BinaryExpression.cpp
+    Block.hpp
     Block.cpp
+    ConditionalExpression.hpp
+    Constant.hpp
+    DumpGraph.hpp
     DumpGraph.cpp
+    Expression.hpp
     Expression.cpp
+    ExpressionFactory.hpp
     ExpressionFactory.cpp
+    Identifier.hpp
+    Number.hpp
+    PrintExpression.hpp
+    SymbolMap.hpp
+    UnaryExpression.hpp
     UnaryExpression.cpp
+    Undefined.hpp
+    Value.hpp
 )

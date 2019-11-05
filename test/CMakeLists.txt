@@ -6,14 +6,14 @@ set(unit_tests
     unit-undefined.in
     unit-id.in
     unit-assign.in
-    unit-empty-block.in
-    unit-empty-block-eval.in
-    unit-simple-block.in
-    unit-simple-block-eval.in
     unit-unary-plus-expression.in
     unit-unary-minus-expression.in
     unit-binary-plus.in
     unit-binary-priorities.in
+    unit-empty-block.in
+    unit-empty-block-eval.in
+    unit-simple-block.in
+    unit-simple-block-eval.in
 )
 set(integration_tests
     integration-binary.in

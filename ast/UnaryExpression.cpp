@@ -1,8 +1,8 @@
 
-#include "UnaryExpression.h"
+#include "UnaryExpression.hpp"
 
-#include "Number.h"
-#include "Undefined.h"
+#include "Number.hpp"
+#include "Undefined.hpp"
 
 #include <memory>
 

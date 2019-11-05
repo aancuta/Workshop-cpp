@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cassert>
 
-#include "Lexer.h"
+#include "Lexer.hpp"
 
 namespace {
     enum class STATE {
@@ -29,9 +29,18 @@ namespace {
     }
 }
 
+int Lexer::readChar() {
+    const int result = _stream.get();
+    const unsigned char uc = static_cast<unsigned char>(result);
+    if (uc == '\n' || uc == '\r') {
+        _line++;
+    }
+    return result;
+}
+
 Lexer::TOKEN_TYPE Lexer::consume() {
     while (isWhiteSpace()) {
-        _stream.ignore();
+        readChar();
     }
     _currentText.clear();
 
@@ -59,7 +68,7 @@ Lexer::TOKEN_TYPE Lexer::consume() {
                     return _currentToken = TOKEN_TYPE::OPERATOR;
                 }
 
-                _currentText += _stream.get();
+                _currentText += readChar();
                 break;
             }
             case STATE::DIGIT: {
@@ -67,7 +76,7 @@ Lexer::TOKEN_TYPE Lexer::consume() {
                     return _currentToken = TOKEN_TYPE::NUMBER;
                 }
 
-                _currentText += _stream.get();
+                _currentText += readChar();
                 break;
             }
             case STATE::ALPHA: {
@@ -85,7 +94,7 @@ Lexer::TOKEN_TYPE Lexer::consume() {
                     return _currentToken = TOKEN_TYPE::IDENTIFIER;
                 }
 
-                _currentText += _stream.get();
+                _currentText += readChar();
                 break;
             }
         }

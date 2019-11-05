@@ -14,7 +14,7 @@
                 adder
             }
             else curr
-        };
+        }
     };
     n = 25;
     fib
